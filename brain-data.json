@@ -1,0 +1,70 @@
+{
+  "chunks":[
+      {
+      "id": 0,
+      "name": "test_chunk_0",
+      "input": {
+        "from_node": [ 1, 2],
+        "from_layer": [1, 1],
+        "local_layer_assigned_id":[-1,-2]},
+      "layers":[
+        {"layer": 1,
+          "size":64,
+          "dynamics":{"a":[0.02, 0.015],"b":[0.2, 0.15],"c":-55,"d":[4.1, 3.2]},
+          "input_layers":[-2,-1,1,2],
+          "exci_inhi": [true,false,false,true]
+        },
+        {"layer": 2,
+          "size":128,
+          "dynamics":{"a":[0.06, 0.05],"b":[0.2, 0.25],"c":-65,"d":[1.8, 2.2]},
+          "input_layers":[-3,1,2],
+          "exci_inhi": [true,false,false]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "test_chunk_1",
+      "input": {
+        "from_node": [0, 2],
+        "from_layer": [1, 2],
+        "local_layer_assigned_id":[-1,-2]},
+      "layers":[
+        {"layer": 1,
+          "size":64,
+          "dynamics":{"a":[0.02, 0.015],"b":[0.2, 0.15],"c":-55,"d":[4.1, 3.2]},
+          "input_layers":[-2,-1,1,2],
+          "exci_inhi": [true,false,false,true]
+        },
+        {"layer": 2,
+          "size":128,
+          "dynamics":{"a":[0.06, 0.05],"b":[0.2, 0.25],"c":-65,"d":[1.8, 2.2]},
+          "input_layers":[-3,1,2],
+          "exci_inhi": [true,false,false]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "test_chunk_2",
+      "input": {
+        "from_node": [0, 1],
+        "from_layer": [1, 2],
+        "local_layer_assigned_id":[-1, -2]},
+      "layers":[
+        {"layer": 1,
+          "size":64,
+          "dynamics":{"a":[0.02, 0.015],"b":[0.2, 0.15],"c":-55,"d":[4.1, 3.2]},
+          "input_layers":[-2,-1,1,2],
+          "exci_inhi": [true,false,false,true]
+        },
+        {"layer": 2,
+          "size":128,
+          "dynamics":{"a":[0.06, 0.05],"b":[0.2, 0.25],"c":-65,"d":[1.8, 2.2]},
+          "input_layers":[-3,1,2],
+          "exci_inhi": [true,false,false]
+        }
+      ]
+    }
+  ]
+}
