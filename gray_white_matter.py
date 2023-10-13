@@ -20,9 +20,9 @@ class GrayMatter:  # weights dynamics size dimensions state/output imput step cu
 
 
 
-class WhiteMatter:
+class WhiteMatter: # contains the connectome and manages the messages between the regions
     def __init__(self, json_brainfile):
-        self.gray_matter  = []
+        self.gray_matter = []
         bf = open(json_brainfile)
         self.brain_data = json.load(bf)
         self.connectome = nx.MultiDiGraph()
