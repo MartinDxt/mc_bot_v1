@@ -1,9 +1,7 @@
-import time
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.widgets import Button, Slider
 from matplotlib import animation
-import pyautogui
 
 """
 4.2.6 dns https://www.izhikevich.org/publications/
@@ -155,7 +153,6 @@ def update(val):
     ax1.set_xlim((-0.6, 1.2))
     ax1.set_ylim((-0.05, 0.2))
     fig1.canvas.draw_idle()
-    fig2.canvas.draw_idle()
     s.updatevar(a_slider.val, b_slider.val, c_slider.val, I_slider.val)
 
 
@@ -182,7 +179,7 @@ def animate(args):
     y1.append(args[1])
     return plt.plot(x1, y1, color='g'), plt.show()
 
-
 button.on_clicked(reset)
-anim = animation.FuncAnimation(fig2, animate, frames=frames, interval=60, save_count=2000)
+
+anim = animation.FuncAnimation(fig2, animate, frames=frames, interval=30, save_count=2000)
 plt.show()
