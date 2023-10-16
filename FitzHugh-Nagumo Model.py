@@ -30,6 +30,7 @@ tr(L) = −a − c < 0
 det(L) = ac + b > 0
 """
 
+
 # class that contains the sim neuron
 class Sim:
     def __init__(self, a, b, c, I):
@@ -47,8 +48,8 @@ class Sim:
         self.I = I
 
     def step(self):
-        self.Vsim = self.Vsim+(self.Vsim*(self.a -self.Vsim)*(self.Vsim - 1) - self.wsim + self.I)
-        self.wsim = self.wsim+(self.b*self.Vsim - self.c*self.wsim)
+        self.Vsim = self.Vsim + (self.Vsim * (self.a - self.Vsim) * (self.Vsim - 1) - self.wsim + self.I)
+        self.wsim = self.wsim + (self.b * self.Vsim - self.c * self.wsim)
         return self.Vsim, self.wsim
 
 
@@ -81,35 +82,47 @@ c = 0.02
 a = 0.1
 I = 0.0
 s = Sim(a, b, c, I)
-x1 = [0]*100
-y1 = [0]*100
+x1 = [0] * 100
+y1 = [0] * 100
+x2 = np.arange(-20 + 0.03, 0, 0.03)
+y2 = [0] * x2.size
 x = np.arange(-0.6, 1.2, 0.1)
 y = np.arange(-0.05, 0.2, 0.01)
 X, Y = np.meshgrid(x, y)
 
 # Create the figure and the line that we will manipulate
-fig1, (ax1, ax2) = plt.subplots(1, 2)
+fig, ((ax1, ax2), axs) = plt.subplots(2, 2)
+gs = axs[1].get_gridspec()
+for ax in axs[:]:
+    ax.remove()
+ax3 = fig.add_subplot(gs[1, :])
 ax1.plot(v, Vnullcline(v, a, I), lw=2)
 ax1.plot(v, wnullcline(v, b, c), lw=2)
 ax1.set_xlabel('V')
 ax1.set_ylabel('w')
-vec_field = ax1.quiver(X, Y, U_vec(X, Y, a, I), V_vec(X, Y, b, c))
+U, V = U_vec(X, Y, a, I), V_vec(X, Y, b, c)
+ax1.quiver(X, Y, U, V)
+
+# setting limits to the axes
 ax1.set_xlim((-0.6, 1.2))
 ax1.set_ylim((-0.05, 0.2))
+ax2.set_ylim((-0.05, 0.25))
+ax2.set_xlim((-0.6, 1.2))
+ax3.set_ylim((-2, 2))
 # adjust the main plot to make room for the sliders
-fig1.subplots_adjust(left=0.35, bottom=0.35)
+fig.subplots_adjust(left=0.35, bottom=0.35)
 # Make a horizontal slider to control the current.
-axI = fig1.add_axes([0.4, 0.1, 0.35, 0.03])
+axI = fig.add_axes([0.4, 0.1, 0.35, 0.03])
 I_slider = Slider(
     ax=axI,
     label='Current I [pA]',
     valmin=0,
-    valmax=0.3,
+    valmax=0.03,
     valinit=I,
 )
 
 # Make a horizontal slider to control a.
-axa = fig1.add_axes([0.4, 0.2, 0.35, 0.03])
+axa = fig.add_axes([0.4, 0.2, 0.35, 0.03])
 a_slider = Slider(
     ax=axa,
     label='a',
@@ -119,7 +132,7 @@ a_slider = Slider(
 )
 
 # Make a vertically oriented slider to control b
-axb = fig1.add_axes([0.1, 0.25, 0.03, 0.5])
+axb = fig.add_axes([0.1, 0.25, 0.03, 0.5])
 b_slider = Slider(
     ax=axb,
     label="b",
@@ -130,7 +143,7 @@ b_slider = Slider(
 )
 
 # Make a vertically oriented slider to control c
-axc = fig1.add_axes([0.2, 0.25, 0.03, 0.5])
+axc = fig.add_axes([0.2, 0.25, 0.03, 0.5])
 c_slider = Slider(
     ax=axc,
     label="c",
@@ -143,15 +156,15 @@ c_slider = Slider(
 
 # The function to be called anytime a slider's value changes
 def update(val):
-
     ax1.clear()
     ax1.plot(v, Vnullcline(v, a_slider.val, I_slider.val), lw=2)
     ax1.plot(v, wnullcline(v, b_slider.val, c_slider.val), lw=2)
-    ax1.quiver(X, Y, U_vec(X, Y, a_slider.val, I_slider.val), V_vec(X, Y, b_slider.val, c_slider.val))
+    U, V = U_vec(X, Y, a_slider.val, I_slider.val), V_vec(X, Y, b_slider.val, c_slider.val)
+    ax1.quiver(X, Y, U, V)
     ax1.set_xlim((-0.6, 1.2))
     ax1.set_ylim((-0.05, 0.2))
-    fig1.canvas.draw_idle()
-    ax2.set_ylim((-0.45, 0.45))
+    fig.canvas.draw_idle()
+    ax2.set_ylim((-0.05, 0.25))
     ax2.set_xlim((-0.6, 1.2))
     s.updatevar(a_slider.val, b_slider.val, c_slider.val, I_slider.val)
 
@@ -163,7 +176,7 @@ c_slider.on_changed(update)
 I_slider.on_changed(update)
 
 # Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
-resetax = fig1.add_axes([0.8, 0.025, 0.1, 0.04])
+resetax = fig.add_axes([0.8, 0.025, 0.1, 0.04])
 button = Button(resetax, 'Reset', hovercolor='0.975')
 
 
@@ -176,14 +189,19 @@ def reset(event):
 
 def animate(args):
     ax2.clear()
-    ax2.set_ylim((-0.45, 0.45))
+    ax3.clear()
+    ax2.set_ylim((-0.05, 0.25))
     ax2.set_xlim((-0.6, 1.2))
+    ax3.set_ylim((-2, 2))
     x1.pop(0)
     y1.pop(0)
+    y2.pop(0)
     x1.append(args[0])
     y1.append(args[1])
-    return ax2.plot(x1, y1, color='g'), plt.show()
+    y2.append(args[0])
+    return ax2.plot(x1, y1, color='g'), ax3.plot(x2, y2, color='b'), plt.show()
+
 
 button.on_clicked(reset)
-anim = animation.FuncAnimation(fig1, animate, frames=frames, interval=30, save_count=2000)
+anim = animation.FuncAnimation(fig, animate, frames=frames, interval=30, save_count=2000)
 plt.show()
