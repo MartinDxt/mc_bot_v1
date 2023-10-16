@@ -81,16 +81,15 @@ c = 0.02
 a = 0.1
 I = 0.0
 s = Sim(a, b, c, I)
-x1 = []
-y1 = []
+x1 = [0]*100
+y1 = [0]*100
 x = np.arange(-0.6, 1.2, 0.1)
 y = np.arange(-0.05, 0.2, 0.01)
 
 X, Y = np.meshgrid(x, y)
 
 # Create the figure and the line that we will manipulate
-fig1, ax1 = plt.subplots()
-fig2 = plt.figure()
+fig1, (ax1, ax2) = plt.subplots(1, 2)
 ax1.plot(v, Vnullcline(v, a, I), lw=2)
 ax1.plot(v, wnullcline(v, b, c), lw=2)
 ax1.set_xlabel('V')
@@ -153,6 +152,8 @@ def update(val):
     ax1.set_xlim((-0.6, 1.2))
     ax1.set_ylim((-0.05, 0.2))
     fig1.canvas.draw_idle()
+    ax2.set_ylim((-0.45, 0.45))
+    ax2.set_xlim((-0.6, 1.2))
     s.updatevar(a_slider.val, b_slider.val, c_slider.val, I_slider.val)
 
 
@@ -175,11 +176,15 @@ def reset(event):
 
 
 def animate(args):
+    ax2.clear()
+    ax2.set_ylim((-0.45, 0.45))
+    ax2.set_xlim((-0.6, 1.2))
+    x1.pop(0)
+    y1.pop(0)
     x1.append(args[0])
     y1.append(args[1])
-    return plt.plot(x1, y1, color='g'), plt.show()
+    return ax2.plot(x1, y1, color='g'), plt.show()
 
 button.on_clicked(reset)
-
-anim = animation.FuncAnimation(fig2, animate, frames=frames, interval=30, save_count=2000)
+anim = animation.FuncAnimation(fig1, animate, frames=frames, interval=30, save_count=2000)
 plt.show()
