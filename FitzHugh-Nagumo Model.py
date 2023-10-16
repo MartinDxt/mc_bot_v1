@@ -85,7 +85,6 @@ x1 = [0]*100
 y1 = [0]*100
 x = np.arange(-0.6, 1.2, 0.1)
 y = np.arange(-0.05, 0.2, 0.01)
-
 X, Y = np.meshgrid(x, y)
 
 # Create the figure and the line that we will manipulate
