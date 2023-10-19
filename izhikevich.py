@@ -228,6 +228,7 @@ Vpeak_slider = Slider(
 )
 
 
+
 # The function to be called anytime a slider's value changes
 def update(val):
     ax1.clear()
