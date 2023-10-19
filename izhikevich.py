@@ -159,7 +159,7 @@ b_slider = Slider(
     ax=axb,
     label="b",
     valmin=-10,
-    valmax=10,
+    valmax=40,
     valinit=b,
     orientation="vertical"
 )
@@ -281,7 +281,8 @@ rs_ax = fig.add_axes([0.25, 0.025, 0.1, 0.04])
 button_rs = Button(rs_ax, 'Regular spiking', hovercolor='0.975')
 rs_ch = fig.add_axes([0.4, 0.025, 0.1, 0.04])
 button_ch = Button(rs_ch, 'chattering', hovercolor='0.975')
-
+rs_res = fig.add_axes([0.55, 0.025, 0.1, 0.04])
+button_res = Button(rs_res, 'resonator', hovercolor='0.975')
 
 def regular_spiking(event):
     Vr_slider.reset()
@@ -318,6 +319,16 @@ def chattering(event):
     k_slider.set_val(1.5)
     C_slider.set_val(50)
 
+def resonator(event):
+    Vr_slider.set_val(-60)
+    Vt_slider.set_val(-60)
+    Vpeak_slider.set_val(35)
+    a_slider.set_val(0.03)
+    b_slider.set_val(30)
+    c_slider.set_val(-50)
+    d_slider.set_val(100)
+    k_slider.set_val(0.7)
+    C_slider.set_val(140)
 
 """
 TODO?
@@ -363,5 +374,6 @@ def animate(args):
 button_rs.on_clicked(regular_spiking)
 button_ib.on_clicked(intrinsically_bursting)
 button_ch.on_clicked(chattering)
+button_res.on_clicked(resonator)
 anim = animation.FuncAnimation(fig, animate, frames=frames, interval=30, save_count=2000)
 plt.show()
