@@ -86,6 +86,7 @@ x1 = [0] * 100
 y1 = [0] * 100
 x2 = np.arange(-20 + 0.03, 0, 0.03)
 y2 = [0] * x2.size
+i = [-1.5] * x2.size
 x = np.arange(-0.6, 1.2, 0.1)
 y = np.arange(-0.05, 0.2, 0.01)
 X, Y = np.meshgrid(x, y)
@@ -137,7 +138,7 @@ b_slider = Slider(
     ax=axb,
     label="b",
     valmin=0,
-    valmax=0.1,
+    valmax=0.05,
     valinit=b,
     orientation="vertical"
 )
@@ -148,7 +149,7 @@ c_slider = Slider(
     ax=axc,
     label="c",
     valmin=0.0001,
-    valmax=0.1,
+    valmax=0.3,
     valinit=b,
     orientation="vertical"
 )
@@ -196,10 +197,12 @@ def animate(args):
     x1.pop(0)
     y1.pop(0)
     y2.pop(0)
+    i.pop(0)
     x1.append(args[0])
     y1.append(args[1])
     y2.append(args[0])
-    return ax2.plot(x1, y1, color='g'), ax3.plot(x2, y2, color='b'), plt.show()
+    i.append(I_slider.val*20-1.5)
+    return ax2.plot(x1, y1, color='g'), ax3.plot(x2, y2, color='b'),ax3.plot(x2, i, color='r'), plt.show()
 
 
 button.on_clicked(reset)
