@@ -59,7 +59,7 @@ class Sim:
 
     def step(self):
         spike = 0
-        self.Vsim = self.Vsim + (self.k * (self.Vsim - self.Vr) * (self.Vsim - self.Vt) - self.usim + self.I)/self.C
+        self.Vsim = self.Vsim + (self.k * (self.Vsim - self.Vr) * (self.Vsim - self.Vt) - self.usim + self.I) / self.C
         self.usim = self.usim + self.a * (self.b * (self.Vsim - self.Vr) - self.usim)
         if self.Vsim > self.Vpeak:
             spike = 1
@@ -84,6 +84,19 @@ def unullcline(V, Vr, b):
     return b * (V - Vr)
 
 
+def U_vec(X, Y, Vt, Vr, k, C, I):
+    return (np.full(X.shape, k) * (X - np.full(X.shape, Vr)) * (X - np.full(X.shape, Vt)) - Y + np.full(X.shape, I)) / np.full(X.shape, C)
+
+
+def V_vec(X, Y, a, b, Vr):
+    return np.full(X.shape, a)*(np.full(X.shape, b)*(X - np.full(X.shape, Vr)) - Y)
+
+
+def normalize(U, V):
+    U / (U * U + V * V)
+    return U / (U * U + V * V) ** 0.5, V / (U * U + V * V) ** 0.5
+
+
 v = np.linspace(-500, 500, 2000)
 
 # Define initial parameters
@@ -103,6 +116,9 @@ y1 = [0] * 100
 x2 = np.arange(-1000, 0, 1)
 y2 = [0] * x2.size
 i = [-1.5] * x2.size
+x = np.arange(-200, 120, 12)
+y = np.arange(-500, 1000, 150)
+X, Y = np.meshgrid(x, y)
 
 # Create the figure and the line that we will manipulate
 fig, ((ax1, ax2), axs) = plt.subplots(2, 2, figsize=(15, 10))
@@ -113,13 +129,15 @@ ax3 = fig.add_subplot(gs[1, :])
 ax1.plot(v, Vnullcline(v, Vr, Vt, k, I), lw=2)
 ax1.plot(v, unullcline(v, Vr, b), lw=2)
 ax1.set_xlabel('V')
-ax1.set_ylabel('w')
+ax1.set_ylabel('u')
+U, V = U_vec(X, Y, Vt, Vr, k, C, I), V_vec(X, Y, a, b, Vr)
+U, V = normalize(U, V)
+ax1.quiver(X, Y, U, V)
 # setting limits to the axes
-ax1.set_xlim((-70, 35))
-ax1.set_ylim((-50, 60))
-ax2.set_xlim((-70, 35))
-ax2.set_ylim((-50, 60))
-ax3.set_ylim((-2, 2))
+ax1.set_ylim((-500, 1000))
+ax1.set_xlim((-200, Vpeak * 1.2))
+ax2.set_ylim((-500, 1000))
+ax2.set_xlim((-200, Vpeak * 1.2))
 
 # adjust the main plot to make room for the sliders
 fig.subplots_adjust(left=0.35, bottom=0.35)
@@ -162,7 +180,7 @@ axC = fig.add_axes([0.2, 0.35, 0.03, 0.5])
 C_slider = Slider(
     ax=axC,
     label="C",
-    valmin=0,
+    valmin=1,
     valmax=200,
     valinit=C,
     orientation="vertical"
@@ -203,22 +221,22 @@ Vr_slider = Slider(
     ax=axVr,
     label='Vr',
     valmin=-100,
-    valmax=100,
+    valmax=0,
     valinit=Vr,
 )
 
 # Make a horizontal slider to control Vt.
-axVt = fig.add_axes([0.05, 0.2, 0.35, 0.03])
+axVt = fig.add_axes([0.05, 0.15, 0.35, 0.03])
 Vt_slider = Slider(
     ax=axVt,
     label='Vt',
     valmin=-100,
-    valmax=100,
+    valmax=0,
     valinit=Vt,
 )
 
 # Make a horizontal slider to control Vpeak.
-axVpeak = fig.add_axes([0.05, 0.15, 0.35, 0.03])
+axVpeak = fig.add_axes([0.05, 0.2, 0.35, 0.03])
 Vpeak_slider = Slider(
     ax=axVpeak,
     label='Vpeak',
@@ -228,14 +246,20 @@ Vpeak_slider = Slider(
 )
 
 
-
 # The function to be called anytime a slider's value changes
 def update(val):
     ax1.clear()
     ax1.plot(v, Vnullcline(v, Vr_slider.val, Vt_slider.val, k_slider.val, I_slider.val), lw=2)
     ax1.plot(v, unullcline(v, Vr_slider.val, b_slider.val), lw=2)
+    U, V = U_vec(X, Y, Vt_slider.val, Vr_slider.val, k_slider.val, C_slider.val, I_slider.val), V_vec(X, Y, a_slider.val, b_slider.val, Vr_slider.val)
+    U, V = normalize(U, V)
+    ax1.quiver(X, Y, U, V)
+    ax2.clear()
+    ax2.plot(v, Vnullcline(v, Vr_slider.val, Vt_slider.val, k_slider.val, I_slider.val), lw=2)
+    ax2.plot(v, unullcline(v, Vr_slider.val, b_slider.val), lw=2)
     fig.canvas.draw_idle()
-    s.updatevar(Vr_slider.val, Vt_slider.val, Vpeak_slider.val, a_slider.val, b_slider.val, c_slider.val, d_slider.val, k_slider.val, I_slider.val, C_slider.val)
+    s.updatevar(Vr_slider.val, Vt_slider.val, Vpeak_slider.val, a_slider.val, b_slider.val, c_slider.val, d_slider.val,
+                k_slider.val, I_slider.val, C_slider.val)
 
 
 # register the update function with each slider
@@ -251,11 +275,11 @@ I_slider.on_changed(update)
 C_slider.on_changed(update)
 
 # Create a `matplotlib.widgets.Button` to reset the sliders to initial values.
-rs_ib = fig.add_axes([0.8, 0.025, 0.1, 0.04])
+rs_ib = fig.add_axes([0.1, 0.025, 0.1, 0.04])
 button_ib = Button(rs_ib, 'Intrinsically bursting', hovercolor='0.975')
-rs_ax = fig.add_axes([0.1, 0.025, 0.1, 0.04])
+rs_ax = fig.add_axes([0.25, 0.025, 0.1, 0.04])
 button_rs = Button(rs_ax, 'Regular spiking', hovercolor='0.975')
-rs_ch = fig.add_axes([0.3, 0.025, 0.1, 0.04])
+rs_ch = fig.add_axes([0.4, 0.025, 0.1, 0.04])
 button_ch = Button(rs_ch, 'chattering', hovercolor='0.975')
 
 
@@ -268,8 +292,8 @@ def regular_spiking(event):
     c_slider.reset()
     d_slider.reset()
     k_slider.reset()
-    I_slider.reset()
     C_slider.reset()
+
 
 def intrinsically_bursting(event):
     Vr_slider.set_val(-75)
@@ -282,6 +306,7 @@ def intrinsically_bursting(event):
     k_slider.set_val(1.2)
     C_slider.set_val(150)
 
+
 def chattering(event):
     Vr_slider.set_val(-60)
     Vt_slider.set_val(-40)
@@ -292,18 +317,27 @@ def chattering(event):
     d_slider.set_val(150)
     k_slider.set_val(1.5)
     C_slider.set_val(50)
+
+
 """
-dV/dt  = (k*(V - Vr)*(V - Vt) - u + I)/C
-du/dt = a*(b*(V - Vr) - u)
+TODO?
+needs custom code:
+low threshold spiking 
+fast spiking 
+late_spiking 
+thalamocortical
+reticular thalamic nucleus
+ecc
 """
+
 
 def animate(args):
     ax2.clear()
     ax3.clear()
     ax1.set_ylim((-500, 1000))
-    ax1.set_xlim((-300, 300))
+    ax1.set_xlim((-200, Vpeak_slider.val * 1.2))
     ax2.set_ylim((-500, 1000))
-    ax2.set_xlim((-300, 300))
+    ax2.set_xlim((-200, Vpeak_slider.val * 1.2))
     """
     ax2.set_xlim((-Vpeak_slider.val*2, Vpeak_slider.val))
     ax2.set_ylim((-75, 100))
@@ -315,8 +349,15 @@ def animate(args):
     x1.append(args[0])
     y1.append(args[1])
     y2.append(args[0])
-    i.append(I_slider.val/10)
-    return ax2.plot(x1, y1, color='g'), ax3.plot(x2, y2, color='b'), ax3.plot(x2, i, color='r'), plt.show()
+    i.append(I_slider.val / 10)
+    return ax2.plot(x1, y1, color='g'), ax3.plot(x2, y2, color='b'), ax3.plot(x2, i, color='r'), ax2.plot(v,
+                                                                                                          Vnullcline(v,
+                                                                                                                     Vr_slider.val,
+                                                                                                                     Vt_slider.val,
+                                                                                                                     k_slider.val,
+                                                                                                                     I_slider.val),
+                                                                                                          lw=2), ax2.plot(
+        v, unullcline(v, Vr_slider.val, b_slider.val), lw=2), plt.show()
 
 
 button_rs.on_clicked(regular_spiking)
