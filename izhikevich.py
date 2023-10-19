@@ -299,6 +299,7 @@ def integrator(event):
     k_slider.set_val(0.7)
     C_slider.set_val(100)
 """
+
 def animate(args):
     ax2.clear()
     ax3.clear()
