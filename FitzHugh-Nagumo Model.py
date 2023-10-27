@@ -6,8 +6,8 @@ from matplotlib import animation
 """
 4.2.6 dns https://www.izhikevich.org/publications/
 Model:
-dV/dt = V*(a − V)*(V − 1) − w + I
-dw/dt = b*V − c*w
+dV/dt = V*(a - V)*(V - 1) - w + I
+dw/dt = b*V - c*w
 V approximation of membrane potential
 w recovery variable slow outward currents
 I injected current
@@ -22,8 +22,8 @@ b c and w become vectors
 dV/dt = V*(a − V)*(V − 1) − sum(w) + I
 
 Nullclines:
-w = V (a − V )(V − 1) + I
-w = b/c V
+w = V*(a − V)*(V − 1) + I
+w = b/c * V
 
 Linearized stability w/ I=0:
 tr(L) = −a − c < 0 
@@ -137,8 +137,8 @@ axb = fig.add_axes([0.1, 0.25, 0.03, 0.5])
 b_slider = Slider(
     ax=axb,
     label="b",
-    valmin=0,
-    valmax=0.05,
+    valmin=-0.1,
+    valmax=0.1,
     valinit=b,
     orientation="vertical"
 )
