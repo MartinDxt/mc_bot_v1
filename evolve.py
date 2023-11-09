@@ -65,7 +65,7 @@ class Genome:
 
             chunk["layers"][f_cl[2]]["input_layers"].append(pointer_lla_id)
 
-    def save2file(self, new_file):
+    def savetofile(self, new_file):
         #json_object = json.dumps(self.chunks, indent=2)
         pprint.pprint(self.chunks, compact=True)
         json_object = pprint.pformat(self.chunks, compact=True).replace("'",'"').replace("True",'true').replace("False",'false')
@@ -80,4 +80,4 @@ chunk = addlayer2chunk(chunk, 64, [-2, 0, 1], [0.02, 0.015], [0.02, 0.015], -55,
 chunk = addlayer2chunk(chunk, 128, [-1, 0, 1], [0.02, 0.025], [0.01, 0.02], -65, [4, 3.5], [True, False, False])
 B1.addchunk2brain(chunk)
 B1.add_input2chunk(2,[3],[1], [1])
-B1.save2file("brain2.json")
+B1.savetofile("brain2.json")
